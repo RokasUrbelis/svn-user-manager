@@ -38,7 +38,7 @@ while :;do
 		echo -e -n "${Yellow_font_prefix}Input username:${Font_color_suffix}"
 		read
 		if [[ $REPLY =~ ^[[:lower:]]+[0-9]{4}$ ]];then
-			if grep "${REPLY}" $PASSWD_FILE &>/dev/null;then
+			if grep "^${REPLY}" $PASSWD_FILE &>/dev/null;then
 				echo "'$REPLY' already exist,please input again" && continue
 			else
 				user=$REPLY
@@ -121,7 +121,7 @@ function CANCEL_USER() {
             user_list=(
                 $(for svn_user in $(awk 'NR>9&&$0!~/^#/{print $1}' $PASSWD_FILE);do  echo $svn_user;done)
             );
-            if { for i in ${user_list[@]};do echo "$i";done|&grep -w "$user"; } &>/dev/null;then    	
+            if { for i in ${user_list[@]};do echo "$i";done |& grep -w "${user}"; } &>/dev/null;then    	
             #########判断被注销用户是否存在############
 			    while :;do
 				    echo -e -n "[${Green_font_prefix}+${Font_color_suffix}]Cancel User:${Green_font_prefix}$user${Font_color_suffix}?   [Y/N]:"
@@ -129,8 +129,8 @@ function CANCEL_USER() {
 			
 				    case ${answer} in
 				    Y|y)
-					    { 	sed -ir "s/^\($user\)/#\1/" $PASSWD_FILE &&\						                ########注释passwd的用户
-						  	sed -i "s/\(.*\),${user}\(.*\)/\1\2/g" $AUTHZ_FILE  &&\                     #######删除authz的用户							  
+					    { 	sed -ir "s/^\(${user}\)/#\1/" $PASSWD_FILE 						                
+						  	sed -i "s/\(.*\),${user}\(.*\)/\1\2/g" $AUTHZ_FILE                  					  
 							echo -e "[${Green_font_prefix}+${Font_color_suffix}]Cancel '$user' successful!";
 						} || echo -e "[${Red_font_prefix}-${Font_color_suffix}]Cancel '$user' failed,Please manual cancel it"
                         while true;do 
@@ -189,4 +189,3 @@ while :;do
 		continue
 	fi
 done
-
